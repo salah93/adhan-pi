@@ -1,5 +1,5 @@
 __pycache__
-env/
+env
 *.egg-info/
 .eggs/
 .envrc
@@ -12,4 +12,3 @@ pip-wheel-metadata/
 build/
 dist/
 .tox
-env/
