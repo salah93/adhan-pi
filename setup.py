@@ -13,7 +13,7 @@ URL = ""
 AUTHOR = "Salah Ahmed"
 AUTHOR_EMAIL = "salahs.email@pm.me"
 
-REQUIREMENTS = []
+REQUIREMENTS = ["attr", "geopy", "requests"]
 TEST_REQUIREMENTS = ["pytest-cov", "coverage[toml]"]
 DEV_REQUIREMENTS = [
     "ipython",
