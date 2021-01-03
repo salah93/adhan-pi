@@ -18,12 +18,15 @@ def get_location_from_query(query: str) -> Coordinates:
 
 
 class PrayertimesAPI(object):
-    API_URL = "http://api.aladhan.com/v1/calendar"
+    API_URL = "https://api.aladhan.com/v1/calendar"
 
     def __init__(self):
         self.session = requests.Session()
         self.session.mount(
             "http://", requests.adapters.HTTPAdapter(max_retries=4)
+        )
+        self.session.mount(
+            "https://", requests.adapters.HTTPAdapter(max_retries=4)
         )
 
     def get_prayer_times(
