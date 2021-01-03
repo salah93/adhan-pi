@@ -1,9 +1,11 @@
 import datetime as dt
 
+import adhan_pi
+
 from argparse import ArgumentParser
 from abc import abstractmethod, ABC
 
-from adhan_pi.utils import get_location_from_query, PrayertimesAPI
+from adhan_pi.utils import get_location_from_query
 
 
 def schedule_prayer_cron():
@@ -13,7 +15,7 @@ def schedule_prayer_cron():
     parser.add_argument("--query", required=True)
     args = parser.parse_args()
 
-    prayer_times = PrayertimesAPI().get_prayer_times(
+    prayer_times = adhan_pi.p.get_prayer_times(
         get_location_from_query(args.query), dt.date.today()
     )
 
