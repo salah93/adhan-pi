@@ -47,8 +47,15 @@ setup(
     install_requires=REQUIREMENTS,
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
+    entry_points={
+        "console_scripts": [
+            "remindmeofprayers=adhan_pi.cli:schedule_cron",
+            "alert_adhan=adhan_pi.cli:alert_adhan",
+        ],
+    },
     extras_require={
         "test": TEST_REQUIREMENTS,
         "dev": TEST_REQUIREMENTS + DEV_REQUIREMENTS,
+        "cron": ["python-crontab"],
     },
 )
