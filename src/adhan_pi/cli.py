@@ -39,5 +39,11 @@ def alert_adhan():
     parser.add_argument("--prayer", required=True)
     args = parser.parse_args()
 
-    with open("/tmp/prayers.txt", "a") as f:
-        f.write("{}\n".format(args.prayer))
+    from pydub import AudioSegment
+    from pydub.playback import play
+
+    if args.prayer == 'fajr':
+        adhan = AudioSegment.from_mp3("/opt/adhan-pi/static/azan-fajr.mp3")
+    else:
+        adhan = AudioSegment.from_mp3("/opt/adhan-pi/static/azan2.mp3")
+    play(adhan)

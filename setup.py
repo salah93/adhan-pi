@@ -56,6 +56,6 @@ setup(
     extras_require={
         "test": TEST_REQUIREMENTS,
         "dev": TEST_REQUIREMENTS + DEV_REQUIREMENTS,
-        "cron": ["python-crontab"],
+        "cron": ["python-crontab", "pydub"],
     },
 )
