@@ -14,6 +14,6 @@ Developing
    >>> tox -e lint && tox
    >>> sudo ln -s ~/adhan-pi /opt/adhan-pi
 
-Add this to your cronjob (with your user)
+Add this to your cronjob (with your user) (crontab -e)
 
-    0 1 * * * /opt/adhan-pi/env/bin/schedule_prayer_cron --query "New York, NY" --user salah
+    0 23 * * * /opt/adhan-pi/env/bin/schedule_prayer_cron --query "New York, NY" --user salah
