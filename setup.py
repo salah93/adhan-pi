@@ -49,7 +49,7 @@ setup(
     setup_requires=["setuptools_scm"],
     entry_points={
         "console_scripts": [
-            "remindmeofprayers=adhan_pi.cli:schedule_cron",
+            "schedule_prayer_cron=adhan_pi.cli:schedule_prayer_cron",
             "alert_adhan=adhan_pi.cli:alert_adhan",
         ],
     },

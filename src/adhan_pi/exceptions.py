@@ -24,9 +24,5 @@ class PrayerAPIError(Exception):
 
 
 class LocationNotFoundError(Exception):
-    def __init__(self, city: str, state: str):
-        super().__init__(
-            "Could not find location for {city}, {state}".format(
-                city=city, state=state
-            )
-        )
+    def __init__(self, query: str):
+        super().__init__("Could not find location for {}".format(query))
