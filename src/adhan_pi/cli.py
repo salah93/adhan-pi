@@ -8,6 +8,7 @@ from adhan_pi.utils import get_location_from_query, PrayertimesAPI
 def schedule_prayer_cron():
 
     parser = ArgumentParser()
+    parser.add_argument("--user", required=True)
     parser.add_argument("--query", required=True)
     args = parser.parse_args()
 
@@ -17,7 +18,7 @@ def schedule_prayer_cron():
 
     import crontab
 
-    with crontab.CronTab(user="salah") as cron:
+    with crontab.CronTab(user=args.user) as cron:
         for old_job in cron.find_comment("adhan_pi"):
             cron.remove(old_job)
 
