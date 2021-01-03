@@ -1,14 +1,14 @@
 import datetime as dt
+import functools
 import requests
 
-from functools import cache
 from geopy.geocoders import Nominatim
 
 from .dataclasses import Coordinates, Prayer, PrayerTimes
 from .exceptions import LocationNotFoundError, PrayerAPIError
 
 
-@cache
+@functools.lru_cache(maxsize=None)
 def get_location_from_query(query: str) -> Coordinates:
     geolocator = Nominatim(user_agent="adhan-pi")
     location = geolocator.geocode(query)
