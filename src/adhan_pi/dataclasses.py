@@ -18,6 +18,11 @@ class Prayer(NamedTuple):
     time: dt.time
 
 
+class Coordinates(NamedTuple):
+    latitude: float
+    longitude: float
+
+
 @attr.s
 class PrayerTimes(Iterable):
     date = attr.ib(type=dt.date)

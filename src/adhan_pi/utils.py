@@ -2,18 +2,19 @@ import datetime as dt
 import requests
 
 from geopy.geocoders import Nominatim
-from geopy.location import Location
 
-from .dataclasses import PrayerTimes
+from .dataclasses import Coordinates, PrayerTimes
 from .exceptions import LocationNotFoundError, PrayerAPIError
 
 
-def get_location_from_query(query: str) -> Location:
+def get_location_from_query(query: str) -> Coordinates:
     geolocator = Nominatim(user_agent="adhan-pi")
     location = geolocator.geocode(query)
     if location is None:
         raise LocationNotFoundError(query)
-    return location
+    return Coordinates(
+        latitude=location.latitude, longitude=location.longitude
+    )
 
 
 class PrayertimesAPI(object):
@@ -26,7 +27,7 @@ class PrayertimesAPI(object):
         )
 
     def get_prayer_times(
-        self, location: Location, date: dt.date
+        self, location: Coordinates, date: dt.date
     ) -> PrayerTimes:
         response = self.session.get(
             self.API_URL,
