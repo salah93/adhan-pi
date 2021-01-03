@@ -9,12 +9,13 @@ Developing
 
 .. code-block:: bash
 
-   >>> sudo dnf install ffmpeg
+   >>> sudo dnf install ffmpeg # install ffmpeg on your system (if not installed)
+   >>> sudo ln -s ~/adhan-pi /opt/adhan-pi
    >>> python3 -m venv /opt/adhan-pi/env
    >>> source /opt/adhan-pi/env/bin/activate
+   >>> cd /opt/adhan-pi
    >>> pip install -e '.[dev]'
    >>> tox -e lint && tox
-   >>> sudo ln -s ~/adhan-pi /opt/adhan-pi
 
 
 Setting up Cron env
