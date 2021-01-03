@@ -1,6 +1,7 @@
 import datetime as dt
 
 from argparse import ArgumentParser
+from abc import abstractmethod, ABC
 
 from adhan_pi.utils import get_location_from_query, PrayertimesAPI
 
@@ -34,16 +35,38 @@ def schedule_prayer_cron():
             job.minute.on(prayer.time.minute)
 
 
+class AdhanAlert(ABC):
+    def __init__(self, prayer: str):
+        self.prayer = prayer
+
+    @abstractmethod
+    def alert(self):
+        pass
+
+
+class AdhanAlertFFMPEG(AdhanAlert):
+    """
+    play adhan sound
+    """
+
+    def alert(self):
+        from pydub import AudioSegment
+        from pydub.playback import play
+
+        if self.prayer == "fajr":
+            adhan = AudioSegment.from_mp3("/opt/adhan-pi/static/azan-fajr.mp3")
+        else:
+            adhan = AudioSegment.from_mp3("/opt/adhan-pi/static/azan2.mp3")
+        play(adhan)
+
+
+def alert_factory(prayer: str):
+    return AdhanAlertFFMPEG(prayer)
+
+
 def alert_adhan():
     parser = ArgumentParser()
     parser.add_argument("--prayer", required=True)
     args = parser.parse_args()
-
-    from pydub import AudioSegment
-    from pydub.playback import play
-
-    if args.prayer == 'fajr':
-        adhan = AudioSegment.from_mp3("/opt/adhan-pi/static/azan-fajr.mp3")
-    else:
-        adhan = AudioSegment.from_mp3("/opt/adhan-pi/static/azan2.mp3")
-    play(adhan)
+    alert_cls = alert_factory(args.prayer)
+    alert_cls.alert()
