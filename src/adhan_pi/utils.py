@@ -3,7 +3,7 @@ import requests
 
 from geopy.geocoders import Nominatim
 
-from .dataclasses import Coordinates, PrayerTimes
+from .dataclasses import Coordinates, Prayer, PrayerTimes
 from .exceptions import LocationNotFoundError, PrayerAPIError
 
 
@@ -47,11 +47,11 @@ class PrayertimesAPI(object):
             timings = data["data"][0]["timings"]
             return PrayerTimes(
                 date=date,
-                fajr=timings["Fajr"],
-                dhuhr=timings["Dhuhr"],
-                asr=timings["Asr"],
-                maghrib=timings["Maghrib"],
-                isha=timings["Isha"],
+                fajr=Prayer(name="fajr", time=timings["Fajr"]),
+                dhuhr=Prayer(name="dhuhr", time=timings["Dhuhr"]),
+                asr=Prayer(name="asr", time=timings["Asr"]),
+                maghrib=Prayer(name="maghrib", time=timings["Maghrib"]),
+                isha=Prayer(name="isha", time=timings["Isha"]),
             )
         except (IndexError, KeyError):
             raise PrayerAPIError(data=data)
