@@ -25,7 +25,7 @@ def schedule_prayer_cron():
 
         for prayer in prayer_times:
             job = cron.new(
-                command="/opt/adhan-pi/env/bin/alert_adhan --prayer {}".format(
+                command="/opt/adhan-pi/env/bin/alert_adhan --prayer {} > /dev/null 2>&1".format(
                     prayer.name
                 ),
                 comment="adhan_pi",
