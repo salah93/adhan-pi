@@ -1,35 +1,19 @@
-import attr
 import datetime as dt
 import requests
 
 from geopy.geocoders import Nominatim
 from geopy.location import Location
 
+from .dataclasses import PrayerTimes
 from .exceptions import LocationNotFoundError, PrayerAPIError
 
 
-def get_location_from_city(city: str, state: str) -> Location:
+def get_location_from_query(query: str) -> Location:
     geolocator = Nominatim(user_agent="adhan-pi")
-    location = geolocator.geocode(
-        "{city}, {state}".format(city=city, state=state)
-    )
+    location = geolocator.geocode(query)
     if location is None:
-        raise LocationNotFoundError(city, state)
+        raise LocationNotFoundError(query)
     return location
-
-
-def extract_time(t: str):
-    return dt.datetime.strptime(t[:5], "%H:%M").time()
-
-
-@attr.s
-class PrayerTimes(object):
-    date = attr.ib(type=dt.date)
-    fajr = attr.ib(type=dt.time, converter=extract_time)
-    dhuhr = attr.ib(type=dt.time, converter=extract_time)
-    asr = attr.ib(type=dt.time, converter=extract_time)
-    maghrib = attr.ib(type=dt.time, converter=extract_time)
-    isha = attr.ib(type=dt.time, converter=extract_time)
 
 
 class PrayertimesAPI(object):
@@ -41,7 +25,9 @@ class PrayertimesAPI(object):
             "http://", requests.adapters.HTTPAdapter(max_retries=4)
         )
 
-    def get_prayer_times(self, location: Location, date: dt.date):
+    def get_prayer_times(
+        self, location: Location, date: dt.date
+    ) -> PrayerTimes:
         response = self.session.get(
             self.API_URL,
             params=dict(
