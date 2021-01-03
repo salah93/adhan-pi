@@ -14,6 +14,7 @@ AUTHOR = "Salah Ahmed"
 AUTHOR_EMAIL = "salahs.email@pm.me"
 
 REQUIREMENTS = ["attr", "geopy", "requests"]
+CRON_REQUIREMENTS = ["python-crontab", "pydub"]
 TEST_REQUIREMENTS = ["pytest-cov", "coverage[toml]"]
 DEV_REQUIREMENTS = [
     "ipython",
@@ -55,7 +56,7 @@ setup(
     },
     extras_require={
         "test": TEST_REQUIREMENTS,
-        "dev": TEST_REQUIREMENTS + DEV_REQUIREMENTS,
-        "cron": ["python-crontab", "pydub"],
+        "dev": TEST_REQUIREMENTS + DEV_REQUIREMENTS + CRON_REQUIREMENTS,
+        "cron": CRON_REQUIREMENTS,
     },
 )
