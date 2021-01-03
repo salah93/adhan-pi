@@ -17,6 +17,7 @@ REQUIREMENTS = []
 TEST_REQUIREMENTS = ["pytest-cov", "coverage[toml]"]
 DEV_REQUIREMENTS = [
     "ipython",
+    "jedi==0.17.2",
     "pdbpp",
     "black",
     "flake8",
