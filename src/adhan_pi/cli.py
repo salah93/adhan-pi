@@ -1,4 +1,5 @@
 import datetime as dt
+import pwd
 
 import adhan_pi
 
@@ -27,6 +28,9 @@ def schedule_prayer_cron():
     parser.add_argument("--query", required=True)
     args = parser.parse_args()
 
+    user_id = pwd.getpwnam(args.user).pw_uid
+    assert user_id
+
     prayer_times = adhan_pi.p.get_prayer_times(
         get_location_from_query(args.query), dt.date.today()
     )
@@ -37,8 +41,8 @@ def schedule_prayer_cron():
 
         for prayer in prayer_times:
             job = cron.new(
-                command="/opt/adhan-pi/env/bin/alert_adhan --prayer {} > /dev/null 2>&1".format(
-                    prayer.name
+                command="XDG_RUNTIME_DIR=/run/user/{user_id} /opt/adhan-pi/env/bin/alert_adhan --prayer {prayer} > /dev/null 2>&1".format(
+                    user_id=user_id, prayer=prayer.name
                 ),
                 comment="adhan_pi",
             )

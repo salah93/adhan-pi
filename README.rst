@@ -30,8 +30,6 @@ Setting up Cron
 
 Add this to your cronjob (with your user) (crontab -e)
 
-    XDG_RUNTIME_DIR=/run/user/<user_id>
-
     @daily /opt/adhan-pi/env/bin/schedule_prayer_cron --query "New York, NY" --user salah
 
 set up crons manually
