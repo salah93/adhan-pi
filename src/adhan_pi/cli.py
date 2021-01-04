@@ -5,11 +5,22 @@ import adhan_pi
 from argparse import ArgumentParser
 from abc import abstractmethod, ABC
 
-from .const import ADHAN_MP3_PATH, FAJR_ADHAN_MP3_PATH
+from .config import ADHAN_MP3_PATH, FAJR_ADHAN_MP3_PATH
 from .utils import get_location_from_query
+
+try:
+    import crontab
+    from pydub import AudioSegment
+    from pydub.playback import play
+
+    CRON_SCRIPTS_IMPORTED = True
+except ImportError:
+    CRON_SCRIPTS_IMPORTED = False
 
 
 def schedule_prayer_cron():
+    if not CRON_SCRIPTS_IMPORTED:
+        raise ImportError
 
     parser = ArgumentParser()
     parser.add_argument("--user", required=True)
@@ -19,8 +30,6 @@ def schedule_prayer_cron():
     prayer_times = adhan_pi.p.get_prayer_times(
         get_location_from_query(args.query), dt.date.today()
     )
-
-    import crontab
 
     with crontab.CronTab(user=args.user) as cron:
         for old_job in cron.find_comment("adhan_pi"):
@@ -53,8 +62,8 @@ class AdhanAlertFFMPEG(AdhanAlert):
     """
 
     def alert(self):
-        from pydub import AudioSegment
-        from pydub.playback import play
+        if not CRON_SCRIPTS_IMPORTED:
+            raise ImportError
 
         if self.prayer == "fajr":
             adhan = AudioSegment.from_mp3(FAJR_ADHAN_MP3_PATH)
