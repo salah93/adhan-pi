@@ -5,7 +5,8 @@ import adhan_pi
 from argparse import ArgumentParser
 from abc import abstractmethod, ABC
 
-from adhan_pi.utils import get_location_from_query
+from .const import ADHAN_MP3_PATH, FAJR_ADHAN_MP3_PATH
+from .utils import get_location_from_query
 
 
 def schedule_prayer_cron():
@@ -56,9 +57,9 @@ class AdhanAlertFFMPEG(AdhanAlert):
         from pydub.playback import play
 
         if self.prayer == "fajr":
-            adhan = AudioSegment.from_mp3("/opt/adhan-pi/static/azan-fajr.mp3")
+            adhan = AudioSegment.from_mp3(FAJR_ADHAN_MP3_PATH)
         else:
-            adhan = AudioSegment.from_mp3("/opt/adhan-pi/static/azan2.mp3")
+            adhan = AudioSegment.from_mp3(ADHAN_MP3_PATH)
         play(adhan)
 
 
