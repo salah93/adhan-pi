@@ -1,7 +1,7 @@
-import automock
-
-from geopy.location import Location
 from unittest.mock import Mock
+
+import automock
+from geopy.location import Location
 
 
 def geocode_mock(failed_lookup: bool = False) -> Location:

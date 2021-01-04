@@ -1,7 +1,7 @@
 import datetime as dt
 import functools
-import requests
 
+import requests
 from geopy.geocoders import Nominatim
 
 from .dataclasses import Coordinates, Prayer, PrayerTimes

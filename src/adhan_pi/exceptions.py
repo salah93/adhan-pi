@@ -1,6 +1,6 @@
-import requests
-
 from typing import Dict, Optional
+
+import requests
 
 
 class PrayerAPIError(Exception):

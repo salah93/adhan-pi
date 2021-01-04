@@ -1,8 +1,8 @@
-import attr
 import datetime as dt
-
 from collections.abc import Iterable, Iterator
 from typing import NamedTuple, Union
+
+import attr
 
 
 def extract_time(t: Union[dt.datetime, str]) -> dt.time:

@@ -1,10 +1,9 @@
 import datetime as dt
 import pwd
+from abc import ABC, abstractmethod
+from argparse import ArgumentParser
 
 import adhan_pi
-
-from argparse import ArgumentParser
-from abc import abstractmethod, ABC
 
 from .config import ADHAN_MP3_PATH, FAJR_ADHAN_MP3_PATH
 from .utils import get_location_from_query

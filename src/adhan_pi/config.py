@@ -1,6 +1,5 @@
 import os
 
-
 FAJR_ADHAN_MP3_PATH = os.getenv(
     "FAJR_ADHAN_MP3_PATH", "/opt/adhan-pi/static/azan-fajr.mp3"
 )
