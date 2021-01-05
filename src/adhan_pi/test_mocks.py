@@ -4,7 +4,7 @@ import automock
 from geopy.location import Location
 
 
-def geocode_mock(failed_lookup: bool = False) -> Location:
+def geocode_mock(failed_lookup: bool = False) -> Mock:
     m = Mock()
     if failed_lookup:
         m.return_value.geocode.return_value = None
@@ -15,7 +15,7 @@ def geocode_mock(failed_lookup: bool = False) -> Location:
     return m
 
 
-def cron_mock(previous_jobs: bool = False) -> Mock:
+def cron_mock(previous_jobs: bool = False) -> MagicMock:
     m = MagicMock()
     if not previous_jobs:
         m().__enter__.return_value.find_comment.return_value = []
