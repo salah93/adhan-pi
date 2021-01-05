@@ -18,9 +18,9 @@ def geocode_mock(failed_lookup: bool = False) -> Mock:
 def cron_mock(previous_jobs: bool = False) -> MagicMock:
     m = MagicMock()
     if not previous_jobs:
-        m().__enter__.return_value.find_comment.return_value = []
+        m.return_value.__enter__.return_value.find_comment.return_value = []
     else:
-        m().__enter__.return_value.find_comment.return_value = [
+        m.return_value.__enter__.return_value.find_comment.return_value = [
             0,
             1,
             2,
@@ -37,10 +37,18 @@ def cron_mock(previous_jobs: bool = False) -> MagicMock:
             cron=None,
             pre_comment=False,
         )
-        m.crons.append(job)
         return job
 
-    m().__enter__.return_value.new.side_effect = new_job
+    m.return_value.__enter__.return_value.new.side_effect = new_job
+    return m
+
+
+def pwd_mock(valid: bool = True) -> Mock:
+    m = Mock()
+    if valid:
+        m.getpwnam.return_value.pw_uid = 1000
+    else:
+        m.getpwnam.side_effect = KeyError
     return m
 
 
@@ -48,3 +56,4 @@ automock.register("adhan_pi.utils.Nominatim", geocode_mock)
 automock.register("adhan_pi.cli.CronTab", cron_mock)
 automock.register("adhan_pi.cli.AudioSegment")
 automock.register("adhan_pi.cli.play")
+automock.register("adhan_pi.cli.pwd", pwd_mock)
