@@ -14,7 +14,7 @@ AUTHOR_EMAIL = "salahs.email@pm.me"
 
 REQUIREMENTS = ["attrs", "geopy", "requests", "automock"]
 CRON_REQUIREMENTS = ["python-crontab", "pydub"]
-TEST_REQUIREMENTS = ["pytest-cov", "coverage[toml]"]
+TEST_REQUIREMENTS = ["pytest-cov", "coverage[toml]", "responses"]
 DEV_REQUIREMENTS = [
     "ipython",
     "jedi==0.17.2",

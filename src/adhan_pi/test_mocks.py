@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 import automock
 from geopy.location import Location
@@ -10,17 +10,23 @@ def geocode_mock(failed_lookup: bool = False) -> Location:
         m.return_value.geocode.return_value = None
     else:
         m.return_value.geocode.return_value = Location(
-            "nyc", (0, 0), {"address": "nyc", "longitude": 0, "latitude": 0}
+            "nyc", (0, 1), {"address": "nyc", "longitude": 0, "latitude": 0}
         )
     return m
 
 
 def cron_mock(previous_jobs: bool = False) -> Mock:
-    m = Mock()
+    m = MagicMock()
     if not previous_jobs:
-        m.CronTab().__enter__().find_comment.return_value = []
+        m().__enter__.return_value.find_comment.return_value = []
     else:
-        m.CronTab().__enter__().find_comment.return_value = [0, 1, 2, 3, 4]
+        m().__enter__.return_value.find_comment.return_value = [
+            0,
+            1,
+            2,
+            3,
+            4,
+        ]
     import crontab
 
     def new_job(command, comment):
@@ -34,11 +40,11 @@ def cron_mock(previous_jobs: bool = False) -> Mock:
         m.crons.append(job)
         return job
 
-    m.CronTab().__enter__().new.side_effect = new_job
+    m().__enter__.return_value.new.side_effect = new_job
     return m
 
 
 automock.register("adhan_pi.utils.Nominatim", geocode_mock)
-automock.register("adhan_pi.cli.crontab", cron_mock)
+automock.register("adhan_pi.cli.CronTab", cron_mock)
 automock.register("adhan_pi.cli.AudioSegment")
 automock.register("adhan_pi.cli.play")

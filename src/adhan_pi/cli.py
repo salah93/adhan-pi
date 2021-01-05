@@ -9,7 +9,7 @@ from .config import ADHAN_MP3_PATH, FAJR_ADHAN_MP3_PATH
 from .utils import get_location_from_query
 
 try:
-    import crontab
+    from crontab import CronTab
     from pydub import AudioSegment
     from pydub.playback import play
 
@@ -34,7 +34,7 @@ def schedule_prayer_cron():
         get_location_from_query(args.query), dt.date.today()
     )
 
-    with crontab.CronTab(user=args.user) as cron:
+    with CronTab(user=args.user) as cron:
         for old_job in cron.find_comment("adhan_pi"):
             cron.remove(old_job)
 
