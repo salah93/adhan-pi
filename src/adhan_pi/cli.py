@@ -18,23 +18,25 @@ except ImportError:
     CRON_SCRIPTS_IMPORTED = False
 
 
-def schedule_prayer_cron():
-    if not CRON_SCRIPTS_IMPORTED:
-        raise ImportError
-
+def schedule_prayer_cron_runner():
     parser = ArgumentParser()
     parser.add_argument("--user", required=True)
     parser.add_argument("--query", required=True)
     args = parser.parse_args()
+    schedule_prayer_cron(args.user, args.query)
 
-    user_id = pwd.getpwnam(args.user).pw_uid
-    assert user_id
+
+def schedule_prayer_cron(user: str, query: str):
+    if not CRON_SCRIPTS_IMPORTED:
+        raise ImportError
+
+    user_id = pwd.getpwnam(user).pw_uid
 
     prayer_times = adhan_pi.p.get_prayer_times(
-        get_location_from_query(args.query), dt.date.today()
+        get_location_from_query(query), dt.date.today()
     )
 
-    with CronTab(user=args.user) as cron:
+    with CronTab(user=user) as cron:
         for old_job in cron.find_comment("adhan_pi"):
             cron.remove(old_job)
 
