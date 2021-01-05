@@ -8,7 +8,8 @@ def prayer_api_url():
     return "https://api.aladhan.com/v1/calendar"
 
 
-def clear_cache(autouse=True):
+@pytest.fixture(autouse=True)
+def clear_cache():
     get_location_from_query.cache_clear()
 
 
