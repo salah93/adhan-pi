@@ -55,7 +55,7 @@ setup(
         ],
     },
     extras_require={
-        "test": TEST_REQUIREMENTS,
+        "test": TEST_REQUIREMENTS + CRON_REQUIREMENTS,
         "dev": TEST_REQUIREMENTS + DEV_REQUIREMENTS + CRON_REQUIREMENTS,
         "cron": CRON_REQUIREMENTS,
     },
