@@ -1,5 +1,6 @@
 import pytest
 import responses
+from adhan_pi.utils import get_location_from_query
 
 
 @pytest.fixture(scope="session")
@@ -7,7 +8,11 @@ def prayer_api_url():
     return "https://api.aladhan.com/v1/calendar"
 
 
-@pytest.fixture(scope="session")
+def clear_cache(autouse=True):
+    get_location_from_query.cache_clear()
+
+
+@pytest.fixture()
 def prayer_api_200_response(prayer_api_url):
     response = {
         "code": 200,
@@ -38,7 +43,7 @@ def prayer_api_200_response(prayer_api_url):
     return response
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def prayer_api_200_response_different_version_response(prayer_api_url):
     response = {
         "code": 200,
@@ -69,7 +74,7 @@ def prayer_api_200_response_different_version_response(prayer_api_url):
     return response
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def prayer_api_400_response(prayer_api_url):
     response = {
         "code": 400,
