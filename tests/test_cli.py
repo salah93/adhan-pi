@@ -1,6 +1,7 @@
-import adhan_pi.cli as cli
 import responses
 from automock import get_mock, swap_mock
+
+import adhan_pi.cli as cli
 
 
 def test_alert_adhan_fajr():

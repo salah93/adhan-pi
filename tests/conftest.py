@@ -1,5 +1,6 @@
 import pytest
 import responses
+
 from adhan_pi.utils import get_location_from_query
 
 

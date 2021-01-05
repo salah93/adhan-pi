@@ -20,7 +20,7 @@ DEV_REQUIREMENTS = [
     "jedi==0.17.2",
     "pdbpp",
     "black==19.10b0",
-    "isort==4.3.21",
+    "isort==5.6.4",
     "flake8",
     "pre-commit",
     "tox",

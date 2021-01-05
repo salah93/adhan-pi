@@ -1,9 +1,10 @@
 import datetime as dt
 
-import adhan_pi.utils as utils
 import pytest
 import responses
 from automock import get_mock
+
+import adhan_pi.utils as utils
 
 
 def test_get_location():
