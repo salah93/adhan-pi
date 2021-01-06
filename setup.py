@@ -36,6 +36,7 @@ setup(
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/rst",
+    python_requires=">=3.6",
     classifiers=CLASSIFIERS,
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
