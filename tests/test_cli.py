@@ -1,3 +1,4 @@
+import pytest
 import responses
 from automock import get_mock, swap_mock
 
@@ -21,6 +22,7 @@ def test_alert_adhan():
 
 
 @responses.activate
+@pytest.mark.freeze_time("2021-01-01")
 def test_schedule_no_previous_jobs(prayer_api_200_response):
     cli.schedule_prayer_cron("salah", "Los Angeles")
     pwd_mock = get_mock("adhan_pi.cli.pwd")
@@ -42,6 +44,7 @@ def test_schedule_no_previous_jobs(prayer_api_200_response):
 
 
 @responses.activate
+@pytest.mark.freeze_time("2021-01-01")
 def test_schedule_previous_jobs(prayer_api_200_response):
     with swap_mock("adhan_pi.cli.CronTab", previous_jobs=True):
         cli.schedule_prayer_cron("salah", "Los Angeles")

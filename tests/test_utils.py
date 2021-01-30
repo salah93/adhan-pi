@@ -21,12 +21,12 @@ def test_get_location():
 def test_get_prayer_times(prayer_api_200_response):
     location = utils.get_location_from_query("New York, NY")
     p = utils.PrayertimesAPI()
-    today = dt.date.today()
-    prayer_times = p.get_prayer_times(location, today)
+    day = dt.date(year=2021, month=1, day=1)
+    prayer_times = p.get_prayer_times(location, day)
     assert isinstance(prayer_times, utils.PrayerTimes)
     assert prayer_times.fajr.name == "fajr"
     assert prayer_times.fajr.time == dt.time(hour=4, minute=58)
-    assert prayer_times.date == today
+    assert prayer_times.date == day
     assert [
         ("fajr", dt.time(hour=4, minute=58)),
         ("dhuhr", dt.time(hour=12)),
@@ -42,15 +42,27 @@ def test_get_prayer_times_200_bad_response(
 ):
     location = utils.get_location_from_query("New York, NY")
     p = utils.PrayertimesAPI()
-    today = dt.date.today()
+    day = dt.date(year=2021, month=1, day=1)
     with pytest.raises(utils.PrayerAPIError):
-        p.get_prayer_times(location, today)
+        p.get_prayer_times(location, day)
 
 
 @responses.activate
 def test_get_prayer_times_400(prayer_api_400_response):
     location = utils.get_location_from_query("New York, NY")
     p = utils.PrayertimesAPI()
-    today = dt.date.today()
+    day = dt.date(year=2021, month=1, day=1)
     with pytest.raises(utils.PrayerAPIError):
-        p.get_prayer_times(location, today)
+        p.get_prayer_times(location, day)
+
+
+@responses.activate
+def test_get_prayer_times_correct_day(prayer_api_200_response):
+    location = utils.get_location_from_query("New York, NY")
+    p = utils.PrayertimesAPI()
+    # day marked as the second of january
+    day = dt.date(year=2021, month=1, day=2)
+    prayer_times = p.get_prayer_times(location, day)
+    assert isinstance(prayer_times, utils.PrayerTimes)
+    assert prayer_times.fajr.name == "fajr"
+    assert prayer_times.fajr.time == dt.time(hour=4, minute=59)

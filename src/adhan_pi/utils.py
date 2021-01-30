@@ -56,7 +56,7 @@ class PrayertimesAPI(object):
                     != date.strftime("%d-%m-%Y"),
                     data["data"],
                 )
-            )[0]
+            )[0]["timings"]
             return PrayerTimes(
                 date=date,
                 fajr=Prayer(name="fajr", time=timings["Fajr"]),
