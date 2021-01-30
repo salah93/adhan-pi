@@ -8,7 +8,8 @@ cookies.txt
 dump.rdb
 .tox/
 pip-wheel-metadata/
-.coverage
+.coverage*
 build/
 dist/
 .tox
+TODO*

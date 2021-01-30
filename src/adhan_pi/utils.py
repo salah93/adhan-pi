@@ -1,5 +1,6 @@
 import datetime as dt
 import functools
+import itertools
 
 import requests
 from geopy.geocoders import Nominatim
@@ -49,7 +50,13 @@ class PrayertimesAPI(object):
             raise PrayerAPIError(response=response)
         data = response.json()
         try:
-            timings = data["data"][0]["timings"]
+            timings = list(
+                itertools.dropwhile(
+                    lambda d: d["date"]["gregorian"]["date"]
+                    != date.strftime("%d-%m-%Y"),
+                    data["data"],
+                )
+            )[0]["timings"]
             return PrayerTimes(
                 date=date,
                 fajr=Prayer(name="fajr", time=timings["Fajr"]),
