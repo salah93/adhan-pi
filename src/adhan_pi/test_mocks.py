@@ -29,7 +29,7 @@ def cron_mock(previous_jobs: bool = False) -> MagicMock:
         ]
     import crontab
 
-    def new_job(command, comment):
+    def new_job(command: str, comment: str) -> crontab.CronItem:
         job = crontab.CronItem(
             command=command,
             comment=comment,

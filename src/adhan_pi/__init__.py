@@ -10,4 +10,4 @@ def get_prayer_times(location: Coordinates, date: dt.date) -> PrayerTimes:
     try:
         return data[date.day - 1]
     except (IndexError, KeyError):
-        raise PrayerAPIError(data=data)
+        raise PrayerAPIError

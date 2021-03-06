@@ -79,7 +79,7 @@ class AdhanAlert(ABC):
         self.prayer = prayer
 
     @abstractmethod
-    def alert(self):
+    def alert(self) -> None:
         pass
 
 
@@ -88,7 +88,7 @@ class AdhanAlertFFMPEG(AdhanAlert):
     play adhan sound
     """
 
-    def alert(self):
+    def alert(self) -> None:
         if not CRON_SCRIPTS_IMPORTED:
             raise ImportError
 
@@ -99,11 +99,11 @@ class AdhanAlertFFMPEG(AdhanAlert):
         play(adhan)
 
 
-def alert_factory(prayer: str):
+def alert_factory(prayer: str) -> AdhanAlert:
     return AdhanAlertFFMPEG(prayer)
 
 
-def alert_adhan():
+def alert_adhan() -> None:
     parser = ArgumentParser()
     parser.add_argument("--prayer", required=True)
     args = parser.parse_args()

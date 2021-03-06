@@ -31,16 +31,16 @@ class PrayerTimes(Iterable):
     maghrib = attr.ib(type=Prayer)
     isha = attr.ib(type=Prayer)
 
-    def __iter__(self):
+    def __iter__(self):  # type: () -> PrayerIterator
         return PrayerIterator(self)
 
 
 class PrayerIterator(Iterator):
-    def __init__(self, pt: PrayerTimes):
+    def __init__(self, pt: PrayerTimes) -> None:
         self.index = 0
         self.pt = pt
 
-    def __iter__(self):
+    def __iter__(self):  # type: () -> PrayerIterator
         return self
 
     def __next__(self) -> Prayer:
