@@ -1,12 +1,14 @@
-import datetime as dt
 import functools
-import itertools
+from typing import Dict, List
 
 import requests
 from geopy.geocoders import Nominatim
 
-from .dataclasses import Coordinates, Prayer, PrayerTimes
+from .dataclasses import Coordinates
 from .exceptions import LocationNotFoundError, PrayerAPIError
+
+_http_client = requests.Session()
+_http_client.mount("https://", requests.adapters.HTTPAdapter(max_retries=4))
 
 
 @functools.lru_cache(maxsize=None)
@@ -20,50 +22,26 @@ def get_location_from_query(query: str) -> Coordinates:
     )
 
 
-class PrayertimesAPI(object):
+@functools.lru_cache(maxsize=None)
+def get_prayer_times_for_month(
+    location: Coordinates, year: int, month: int,
+) -> List[Dict[str, str]]:
     API_URL = "https://api.aladhan.com/v1/calendar"
-
-    def __init__(self):
-        self.session = requests.Session()
-        self.session.mount(
-            "http://", requests.adapters.HTTPAdapter(max_retries=4)
-        )
-        self.session.mount(
-            "https://", requests.adapters.HTTPAdapter(max_retries=4)
-        )
-
-    def get_prayer_times(
-        self, location: Coordinates, date: dt.date
-    ) -> PrayerTimes:
-        response = self.session.get(
-            self.API_URL,
-            params=dict(
-                latitude=location.latitude,
-                longitude=location.longitude,
-                method="02",
-                month=date.strftime("%m"),
-                year=date.strftime("%y"),
-            ),
-            timeout=(0.5, 0.5),
-        )
-        if response.status_code != 200:
-            raise PrayerAPIError(response=response)
-        data = response.json()
-        try:
-            timings = list(
-                itertools.dropwhile(
-                    lambda d: d["date"]["gregorian"]["date"]
-                    != date.strftime("%d-%m-%Y"),
-                    data["data"],
-                )
-            )[0]["timings"]
-            return PrayerTimes(
-                date=date,
-                fajr=Prayer(name="fajr", time=timings["Fajr"]),
-                dhuhr=Prayer(name="dhuhr", time=timings["Dhuhr"]),
-                asr=Prayer(name="asr", time=timings["Asr"]),
-                maghrib=Prayer(name="maghrib", time=timings["Maghrib"]),
-                isha=Prayer(name="isha", time=timings["Isha"]),
-            )
-        except (IndexError, KeyError):
-            raise PrayerAPIError(data=data)
+    response = _http_client.get(
+        API_URL,
+        params=dict(
+            latitude=location.latitude,
+            longitude=location.longitude,
+            method="02",
+            month=month,
+            year=year,
+        ),
+        timeout=(0.5, 0.5),
+    )
+    if response.status_code != 200:
+        raise PrayerAPIError(response=response)
+    data = response.json()
+    try:
+        return [d["timings"] for d in data["data"]]
+    except (IndexError, KeyError):
+        raise PrayerAPIError(data=data)

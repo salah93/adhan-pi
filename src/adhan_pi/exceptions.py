@@ -3,7 +3,11 @@ from typing import Dict, Optional
 import requests
 
 
-class PrayerAPIError(Exception):
+class AdhanPiError(Exception):
+    pass
+
+
+class PrayerAPIError(AdhanPiError):
     def __init__(
         self,
         response: Optional[requests.Response] = None,
@@ -23,6 +27,6 @@ class PrayerAPIError(Exception):
             super().__init__()
 
 
-class LocationNotFoundError(Exception):
+class LocationNotFoundError(AdhanPiError):
     def __init__(self, query: str):
         super().__init__("Could not find location for {}".format(query))
