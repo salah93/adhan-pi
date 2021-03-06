@@ -1,12 +1,13 @@
 import datetime as dt
+import os
+import pickle
 import pwd
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 
-import adhan_pi
-
 from .config import ADHAN_MP3_PATH, FAJR_ADHAN_MP3_PATH
-from .utils import get_location_from_query
+from .dataclasses import PrayerTimes
+from .utils import get_location_from_query, get_prayer_times_for_month
 
 try:
     from crontab import CronTab
@@ -18,7 +19,7 @@ except ImportError:
     CRON_SCRIPTS_IMPORTED = False
 
 
-def schedule_prayer_cron_runner():
+def schedule_prayer_cron_runner() -> None:
     parser = ArgumentParser()
     parser.add_argument("--user", required=True)
     parser.add_argument("--query", required=True)
@@ -26,15 +27,13 @@ def schedule_prayer_cron_runner():
     schedule_prayer_cron(args.user, args.query)
 
 
-def schedule_prayer_cron(user: str, query: str):
+def schedule_prayer_cron(user: str, query: str) -> None:
     if not CRON_SCRIPTS_IMPORTED:
         raise ImportError
 
     user_id = pwd.getpwnam(user).pw_uid
 
-    prayer_times = adhan_pi.get_prayer_times(
-        get_location_from_query(query), dt.date.today()
-    )
+    prayer_times = _get_prayer_times_for_today(query)
 
     with CronTab(user=user) as cron:
         for old_job in cron.find_comment("adhan_pi"):
@@ -50,6 +49,29 @@ def schedule_prayer_cron(user: str, query: str):
             job.day.every(1)
             job.hour.on(prayer.time.hour)
             job.minute.on(prayer.time.minute)
+
+
+def _get_prayer_times_for_today(query: str) -> PrayerTimes:
+    today = dt.date.today()
+
+    cache_folder = os.path.expanduser(f"~/.cache/prayertimes/{today.year}/")
+    os.makedirs(cache_folder, exist_ok=True)
+
+    cache_file = os.path.join(
+        cache_folder, f"{today.strftime('%B').lower()}.pickle"
+    )
+    try:
+        with open(cache_file, "rb") as f:
+            prayer_times_all = pickle.load(f)
+        if prayer_times_all[today.day - 1].date != today:
+            raise KeyError
+    except (FileNotFoundError, IndexError, AttributeError, KeyError):
+        prayer_times_all = get_prayer_times_for_month(
+            get_location_from_query(query), today.year, today.month
+        )
+        with open(cache_file, "wb") as f:
+            pickle.dump(prayer_times_all, f)
+    return prayer_times_all[today.day - 1]
 
 
 class AdhanAlert(ABC):
