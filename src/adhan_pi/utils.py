@@ -1,10 +1,11 @@
+import datetime as dt
 import functools
-from typing import Dict, List
+from typing import List
 
 import requests
 from geopy.geocoders import Nominatim
 
-from .dataclasses import Coordinates
+from .dataclasses import Coordinates, Prayer, PrayerTimes
 from .exceptions import LocationNotFoundError, PrayerAPIError
 
 _http_client = requests.Session()
@@ -25,7 +26,7 @@ def get_location_from_query(query: str) -> Coordinates:
 @functools.lru_cache(maxsize=None)
 def get_prayer_times_for_month(
     location: Coordinates, year: int, month: int,
-) -> List[Dict[str, str]]:
+) -> List[PrayerTimes]:
     API_URL = "https://api.aladhan.com/v1/calendar"
     response = _http_client.get(
         API_URL,
@@ -42,6 +43,18 @@ def get_prayer_times_for_month(
         raise PrayerAPIError(response=response)
     data = response.json()
     try:
-        return [d["timings"] for d in data["data"]]
+        return [
+            PrayerTimes(
+                date=dt.datetime.strptime(
+                    d["date"]["gregorian"]["date"], "%d-%m-%Y"
+                ).date(),
+                fajr=Prayer(name="fajr", time=d["timings"]["Fajr"]),
+                dhuhr=Prayer(name="dhuhr", time=d["timings"]["Dhuhr"]),
+                asr=Prayer(name="asr", time=d["timings"]["Asr"]),
+                maghrib=Prayer(name="maghrib", time=d["timings"]["Maghrib"]),
+                isha=Prayer(name="isha", time=d["timings"]["Isha"]),
+            )
+            for d in data["data"]
+        ]
     except (IndexError, KeyError):
         raise PrayerAPIError(data=data)
