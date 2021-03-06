@@ -32,7 +32,7 @@ def schedule_prayer_cron(user: str, query: str):
 
     user_id = pwd.getpwnam(user).pw_uid
 
-    prayer_times = adhan_pi.p.get_prayer_times(
+    prayer_times = adhan_pi.get_prayer_times(
         get_location_from_query(query), dt.date.today()
     )
 
