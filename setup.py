@@ -49,6 +49,7 @@ setup(
     keywords=KEYWORDS,
     packages=find_packages(where="src"),
     package_dir={"": "src"},
+    package_data={"adhan_pi": ["py.typed", "stubs/**/*.pyi"]},
     include_package_data=True,
     zip_safe=False,
     install_requires=REQUIREMENTS,
