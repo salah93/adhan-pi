@@ -54,7 +54,10 @@ def schedule_prayer_cron(user: str, query: str) -> None:
 def _get_prayer_times_for_today(query: str) -> PrayerTimes:
     today = dt.date.today()
 
-    cache_folder = os.path.expanduser(f"~/.cache/prayertimes/{today.year}/")
+    cache_folder = os.environ.get(
+        "CACHE_FOLDER",
+        os.path.expanduser(f"~/.cache/prayertimes/{today.year}/"),
+    )
     os.makedirs(cache_folder, exist_ok=True)
 
     cache_file = os.path.join(

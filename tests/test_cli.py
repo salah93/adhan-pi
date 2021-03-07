@@ -1,8 +1,21 @@
+import shutil
+from unittest.mock import patch
+
 import pytest
 import responses
 from automock import get_mock, swap_mock
 
 import adhan_pi.cli as cli
+
+
+@pytest.fixture
+def cache_folder():
+    cache_folder = "/tmp/testingadhan"
+    d = patch.dict("os.environ", {"CACHE_FOLDER": cache_folder})
+    d.start()
+    yield
+    d.stop()
+    shutil.rmtree(cache_folder)
 
 
 def test_alert_adhan_fajr():
@@ -23,7 +36,7 @@ def test_alert_adhan():
 
 @responses.activate
 @pytest.mark.freeze_time("2021-01-01")
-def test_schedule_no_previous_jobs(prayer_api_200_response):
+def test_schedule_no_previous_jobs(prayer_api_200_response, cache_folder):
     cli.schedule_prayer_cron("salah", "Los Angeles")
     pwd_mock = get_mock("adhan_pi.cli.pwd")
     pwd_mock.getpwnam.assert_called_with("salah")
@@ -45,7 +58,7 @@ def test_schedule_no_previous_jobs(prayer_api_200_response):
 
 @responses.activate
 @pytest.mark.freeze_time("2021-01-01")
-def test_schedule_previous_jobs(prayer_api_200_response):
+def test_schedule_previous_jobs(prayer_api_200_response, cache_folder):
     with swap_mock("adhan_pi.cli.CronTab", previous_jobs=True):
         cli.schedule_prayer_cron("salah", "Los Angeles")
         cron_mock = get_mock("adhan_pi.cli.CronTab")
