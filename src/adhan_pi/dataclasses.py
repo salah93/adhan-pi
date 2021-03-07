@@ -1,6 +1,5 @@
 import datetime as dt
-from collections.abc import Iterable, Iterator
-from typing import NamedTuple, Union
+from typing import Iterable, Iterator, NamedTuple, Union
 
 import attr
 
