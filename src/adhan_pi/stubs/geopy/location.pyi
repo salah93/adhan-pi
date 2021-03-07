@@ -7,8 +7,8 @@ class Location:
     def __init__(
         self,
         address: str,
-        point: Union[Point, str, collections.abc.Sequence],
-        raw: Dict,
+        point: Union[Point, str, collections.abc.Sequence[float]],
+        raw: Dict[str, Union[str, float]],
     ) -> None: ...
     @property
     def latitude(self) -> float: ...

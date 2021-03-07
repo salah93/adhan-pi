@@ -40,7 +40,7 @@ def get_prayer_times_for_month(
         timeout=(0.5, 0.5),
     )
     if response.status_code != 200:
-        raise PrayerAPIError(response=response)
+        raise PrayerAPIError
     data = response.json()
     try:
         return [
@@ -57,4 +57,4 @@ def get_prayer_times_for_month(
             for d in data["data"]
         ]
     except (IndexError, KeyError):
-        raise PrayerAPIError(data=data)
+        raise PrayerAPIError

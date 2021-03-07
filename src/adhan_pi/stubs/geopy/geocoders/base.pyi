@@ -13,5 +13,4 @@ class Geocoder:
         proxies: Union[int, object] = DEFAULT_SENTINEL,
         user_agent: Optional[str] = None,
         ssl_context: Union[int, object] = DEFAULT_SENTINEL,
-        adapter_factory: Optional[Callable] = None
     ) -> None: ...

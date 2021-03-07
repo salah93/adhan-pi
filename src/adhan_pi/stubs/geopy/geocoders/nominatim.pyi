@@ -2,7 +2,7 @@ from .base import DEFAULT_SENTINEL, Geocoder
 from ..point import Point
 from ..location import Location
 
-from typing import Callable, Dict, List, Optional, Union
+from typing import Callable, List, Optional, Union
 
 _DEFAULT_NOMINATIM_DOMAIN = "nominatim.openstreetmap.org"
 
@@ -16,11 +16,10 @@ class Nominatim(Geocoder):
         scheme: Optional[str] = None,
         user_agent: Optional[str] = None,
         ssl_context: Union[int, object] = DEFAULT_SENTINEL,
-        adapter_factory: Optional[Callable] = None
     ) -> None: ...
     def geocode(
         self,
-        query: Union[Dict, str],
+        query: str,
         *,
         exactly_one: bool = True,
         timeout: Union[int, object] = DEFAULT_SENTINEL,
@@ -33,5 +32,5 @@ class Nominatim(Geocoder):
         viewbox: Optional[List[Point]] = None,
         bounded: bool = False,
         featuretype: Optional[str] = None,
-        namedetails: bool = False
+        namedetails: bool = False,
     ) -> Location: ...

@@ -23,7 +23,7 @@ class Coordinates(NamedTuple):
 
 
 @attr.s
-class PrayerTimes(Iterable):
+class PrayerTimes(Iterable[Prayer]):
     date = attr.ib(type=dt.date)
     fajr = attr.ib(type=Prayer)
     dhuhr = attr.ib(type=Prayer)
@@ -35,7 +35,7 @@ class PrayerTimes(Iterable):
         return PrayerIterator(self)
 
 
-class PrayerIterator(Iterator):
+class PrayerIterator(Iterator[Prayer]):
     def __init__(self, pt: PrayerTimes) -> None:
         self.index = 0
         self.pt = pt
