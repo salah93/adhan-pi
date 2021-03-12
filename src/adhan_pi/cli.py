@@ -4,9 +4,10 @@ import pickle
 import pwd
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
+from typing import List, Optional
 
 from .config import ADHAN_MP3_PATH, FAJR_ADHAN_MP3_PATH
-from .dataclasses import PrayerTimes
+from .dataclasses import Coordinates, PrayerTimes
 from .utils import get_location_from_query, get_prayer_times_for_month
 
 try:
@@ -19,22 +20,36 @@ except ImportError:
     CRON_SCRIPTS_IMPORTED = False
 
 
+def folder_type(v: str) -> str:
+    os.makedirs(v, exist_ok=True)
+    return v
+
+
 def schedule_prayer_cron_runner() -> None:
     parser = ArgumentParser()
     parser.add_argument("--user", required=True)
     parser.add_argument("--query", required=True)
+    parser.add_argument(
+        "--cache-dir",
+        default=os.path.expanduser(
+            f"~/.cache/prayertimes/{dt.date.today().year}/"
+        ),
+        type=folder_type,
+        required=True,
+    )
     args = parser.parse_args()
-    schedule_prayer_cron(args.user, args.query)
+    schedule_prayer_cron(args.user, args.query, args.cache_dir)
 
 
-def schedule_prayer_cron(user: str, query: str) -> None:
+def schedule_prayer_cron(user: str, query: str, cache_dir: str) -> None:
     if not CRON_SCRIPTS_IMPORTED:
         raise ImportError
 
     user_id = pwd.getpwnam(user).pw_uid
 
-    prayer_times = _get_prayer_times_for_today(query)
-
+    today = dt.date.today()
+    coords = get_location_from_query(query)
+    prayer_times = get_prayer_times_for_day(coords, today, cache_dir)
     with CronTab(user=user) as cron:
         for old_job in cron.find_comment("adhan_pi"):
             cron.remove(old_job)
@@ -51,30 +66,36 @@ def schedule_prayer_cron(user: str, query: str) -> None:
             job.minute.on(prayer.time.minute)
 
 
-def _get_prayer_times_for_today(query: str) -> PrayerTimes:
-    today = dt.date.today()
-
-    cache_folder = os.environ.get(
-        "CACHE_FOLDER",
-        os.path.expanduser(f"~/.cache/prayertimes/{today.year}/"),
-    )
-    os.makedirs(cache_folder, exist_ok=True)
+def get_prayer_times_for_day(
+    coords: Coordinates, date: dt.date, cache_dir: str
+) -> PrayerTimes:
 
     cache_file = os.path.join(
-        cache_folder, f"{today.strftime('%B').lower()}.pickle"
+        cache_dir, f"{date.strftime('%B').lower()}.pickle"
     )
+
+    prayer_times_all = _load_from_cached_file(cache_file)
+    if prayer_times_all is None:
+        prayer_times_all = get_prayer_times_for_month(
+            coords, date.year, date.month
+        )
+        _cache_to_file(prayer_times_all, cache_file)
+    return prayer_times_all[date.day - 1]
+
+
+def _load_from_cached_file(cache_file: str) -> Optional[List[PrayerTimes]]:
     try:
         with open(cache_file, "rb") as f:
-            prayer_times_all = pickle.load(f)
-        if prayer_times_all[today.day - 1].date != today:
-            raise KeyError
+            return pickle.load(f)
     except (FileNotFoundError, IndexError, AttributeError, KeyError):
-        prayer_times_all = get_prayer_times_for_month(
-            get_location_from_query(query), today.year, today.month
-        )
-        with open(cache_file, "wb") as f:
-            pickle.dump(prayer_times_all, f)
-    return prayer_times_all[today.day - 1]
+        return None
+
+
+def _cache_to_file(
+    prayer_times_all: List[PrayerTimes], cache_file: str
+) -> None:
+    with open(cache_file, "wb") as f:
+        pickle.dump(prayer_times_all, f)
 
 
 class AdhanAlert(ABC):
