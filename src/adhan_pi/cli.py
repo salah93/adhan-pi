@@ -31,8 +31,9 @@ def schedule_prayer_cron_runner() -> None:
     parser.add_argument("--query", required=True)
     parser.add_argument(
         "--cache-dir",
-        default=os.path.expanduser(
-            f"~/.cache/prayertimes/{dt.date.today().year}/"
+        default=os.path.join(
+            os.getenv("XDG_CACHE_HOME", os.path.expanduser("~/.cache")),
+            f"prayertimes/{dt.date.today().year}/",
         ),
         type=folder_type,
         required=True,
