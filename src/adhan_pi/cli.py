@@ -29,20 +29,11 @@ def schedule_prayer_cron_runner() -> None:
     parser = ArgumentParser()
     parser.add_argument("--user", required=True)
     parser.add_argument("--query", required=True)
-    parser.add_argument(
-        "--cache-dir",
-        default=os.path.join(
-            os.getenv("XDG_CACHE_HOME", os.path.expanduser("~/.cache")),
-            f"prayertimes/{dt.date.today().year}/",
-        ),
-        type=folder_type,
-        required=True,
-    )
     args = parser.parse_args()
-    schedule_prayer_cron(args.user, args.query, args.cache_dir)
+    schedule_prayer_cron(args.user, args.query)
 
 
-def schedule_prayer_cron(user: str, query: str, cache_dir: str) -> None:
+def schedule_prayer_cron(user: str, query: str) -> None:
     if not CRON_SCRIPTS_IMPORTED:
         raise ImportError
 
@@ -50,7 +41,7 @@ def schedule_prayer_cron(user: str, query: str, cache_dir: str) -> None:
 
     today = dt.date.today()
     coords = get_location_from_query(query)
-    prayer_times = get_prayer_times_for_day(coords, today, cache_dir)
+    prayer_times = get_prayer_times_for_day(coords, today)
     with CronTab(user=user) as cron:
         for old_job in cron.find_comment("adhan_pi"):
             cron.remove(old_job)
@@ -68,9 +59,14 @@ def schedule_prayer_cron(user: str, query: str, cache_dir: str) -> None:
 
 
 def get_prayer_times_for_day(
-    coords: Coordinates, date: dt.date, cache_dir: str
+    coords: Coordinates, date: dt.date
 ) -> PrayerTimes:
-
+    cache_dir = folder_type(
+        os.path.join(
+            os.getenv("XDG_CACHE_HOME", os.path.expanduser("~/.cache")),
+            f"prayertimes/{date.year}/",
+        )
+    )
     cache_file = os.path.join(
         cache_dir, f"{date.strftime('%B').lower()}.pickle"
     )
